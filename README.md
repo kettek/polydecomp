@@ -3,6 +3,8 @@ This library implements Mark Bayazit's polygon decomposition algorithm, turning 
 
 It requires Go 1.18 due to the use of generics to allow both float32 and float64 types.
 
+Polygons must not be self-intersecting.
+
 ## Why
 I needed it for generating 2D terrain geometry from arbitrarly shaped polygons and could not find one written in go.
 
