@@ -76,15 +76,15 @@ func (e *Example) Update() error {
 func (e *Example) Draw(screen *ebiten.Image) {
 	text.Draw(screen, "press 'd' to toggle decomposition", mplusNormalFont, 0, 24, color.White)
 	if !e.showDecomp {
-		DrawPolygon(screen, 100, 100, e.poly, color.RGBA{255, 255, 255, 255})
+		DrawPolygon(screen, 150, 100, e.poly, color.RGBA{255, 255, 255, 255})
 	} else {
 		for i, p := range e.polys {
 			if i == 0 {
-				DrawPolygon(screen, 100, 100, p, color.RGBA{255, 0, 0, 255})
+				DrawPolygon(screen, 150, 100, p, color.RGBA{255, 0, 0, 255})
 			} else if i == 1 {
-				DrawPolygon(screen, 100, 100, p, color.RGBA{0, 255, 0, 255})
+				DrawPolygon(screen, 150, 100, p, color.RGBA{0, 255, 0, 255})
 			} else {
-				DrawPolygon(screen, 100, 100, p, color.RGBA{0, 0, 255, 255})
+				DrawPolygon(screen, 150, 100, p, color.RGBA{0, 0, 255, 255})
 			}
 		}
 	}
