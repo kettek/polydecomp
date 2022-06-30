@@ -5,6 +5,8 @@ It requires Go 1.18 due to the use of generics to allow both float32 and float64
 
 Polygons must not be self-intersecting.
 
+![original](original.png) -> ![sliced](sliced.png)
+
 ## Why
 I needed it for generating 2D terrain geometry from arbitrarly shaped polygons and could not find one written in go.
 
