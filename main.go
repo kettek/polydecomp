@@ -74,7 +74,7 @@ func (p Polygon[T]) at(i int) [2]T {
 	return p[i%len(p)]
 }
 
-func (polygon Polygon[T]) decompose(polys *[]Polygon[T], maxDistance T) {
+func (polygon Polygon[T]) decompose(polys *[]Polygon[T]) {
 	var upperInt, lowerInt, p [2]T
 	var upperDist, lowerDist, d, closestDist T
 	var upperIndex, lowerIndex, closestIndex int
@@ -89,14 +89,16 @@ func (polygon Polygon[T]) decompose(polys *[]Polygon[T], maxDistance T) {
 	for i := 0; i < len(polygon); i++ {
 		if polygon.isReflex(i) {
 			// Uh... this is probably a bad idea, but math.Max[Type] does not exist....
-			upperDist, lowerDist = maxDistance, maxDistance
+			upperDist, lowerDist = 0, 0
+			upperDistChecked, lowerDistChecked := false, false
 
 			for j := 0; j < len(polygon); j++ {
 				if pointLeft(polygon.at(i-1), polygon.at(i), polygon.at(j)) && pointRightOn(polygon.at(i-1), polygon.at(i), polygon.at(j-1)) { // If the line intersects with an edge.
 					p = pointIntersection(polygon.at(i-1), polygon.at(i), polygon.at(j), polygon.at(j-1)) // Get the intersection point.
 					if pointRight(polygon.at(i+1), polygon.at(i), p) {                                    // Ensure it is inside the polygon.
 						d = pointSquareDistance(polygon[i], p)
-						if d < lowerDist { // Keep only the closest intersection.
+						if d < lowerDist || !lowerDistChecked { // Keep only the closest intersection.
+							lowerDistChecked = true
 							lowerDist = d
 							lowerInt = p
 							lowerIndex = j
@@ -107,7 +109,8 @@ func (polygon Polygon[T]) decompose(polys *[]Polygon[T], maxDistance T) {
 					p = pointIntersection(polygon.at(i+1), polygon.at(i), polygon.at(j), polygon.at(j+1))
 					if pointLeft(polygon.at(i-1), polygon.at(i), p) {
 						d = pointSquareDistance(polygon[i], p)
-						if d < upperDist {
+						if d < upperDist || !upperDistChecked {
+							upperDistChecked = true
 							upperDist = d
 							upperInt = p
 							upperIndex = j
@@ -143,13 +146,15 @@ func (polygon Polygon[T]) decompose(polys *[]Polygon[T], maxDistance T) {
 					upperIndex += len(polygon)
 				}
 
-				closestDist = maxDistance
+				closestDist = 0
+				closestDistChecked := false
 
 				for j := lowerIndex; j <= upperIndex; j++ {
 					if pointLeftOn(polygon.at(i-1), polygon.at(i), polygon.at(j)) &&
 						pointRightOn(polygon.at(i+1), polygon.at(i), polygon.at(j)) {
 						d := pointSquareDistance(polygon.at(i), polygon.at(j))
-						if d < closestDist {
+						if d < closestDist || !closestDistChecked {
+							closestDistChecked = true
 							closestDist = d
 							closestIndex = j % len(polygon)
 						}
@@ -173,11 +178,11 @@ func (polygon Polygon[T]) decompose(polys *[]Polygon[T], maxDistance T) {
 
 			// Solve smallest poly first.
 			if len(lowerPoly) < len(upperPoly) {
-				lowerPoly.decompose(polys, maxDistance)
-				upperPoly.decompose(polys, maxDistance)
+				lowerPoly.decompose(polys)
+				upperPoly.decompose(polys)
 			} else {
-				upperPoly.decompose(polys, maxDistance)
-				lowerPoly.decompose(polys, maxDistance)
+				upperPoly.decompose(polys)
+				lowerPoly.decompose(polys)
 			}
 			return
 		}
@@ -188,8 +193,8 @@ func (polygon Polygon[T]) decompose(polys *[]Polygon[T], maxDistance T) {
 }
 
 // Decompose decomposes a polygonal shape into convex polygons if needed.
-func (p Polygon[T]) Decompose(maxDistance T) []Polygon[T] {
+func (p Polygon[T]) Decompose() []Polygon[T] {
 	var polys []Polygon[T]
-	p.decompose(&polys, maxDistance)
+	p.decompose(&polys)
 	return polys
 }

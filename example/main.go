@@ -3,7 +3,6 @@ package main
 import (
 	"image/color"
 	"log"
-	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -63,7 +62,7 @@ func (e *Example) Init() {
 	// Make that polygon CCW.
 	e.poly.CCW()
 
-	e.polys = e.poly.Decompose(math.MaxFloat64)
+	e.polys = e.poly.Decompose()
 }
 
 func (e *Example) Update() error {
